@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Рандомный покрас</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #12121c;
+      color: #f0e6d3;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, #e94560, #f4a261);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .section {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 25px;
+      margin: 15px 0;
+      width: 100%;
+      max-width: 500px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #cccccc;
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 20px 15px;
+      min-width: 90px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      opacity: 0;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+   
+    .card.visible {
+      opacity: 1;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .color-dot {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      margin-bottom: 12px;
+      border: 2px solid rgba(255,255,255,0.4);
+      box-shadow: 0 0 15px currentColor;
+      transition: background-color 0.1s ease;
+    }
+
+    .color-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      word-break: break-word;
+      min-height: 2.5em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section-button {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.1);
+      color: #f0e6d3;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 1px;
+      backdrop-filter: blur(5px);
+    }
+
+    .section-button:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <h1>✨ Рандомный покрас ✨</h1>
+
+  <!-- Основные цвета -->
+  <div class="section">
+    <div class="section-title">🎨 Основные цвета</div>
+    <div id="baseColors" class="cards"></div>
+    <button class="section-button" onclick="generateBases()">🔄 Тык!</button>
+  </div>
+
+  <!-- Тени -->
+  <div class="section">
+    <div class="section-title">💧 Тени</div>
+    <div id="washColor" class="cards"></div>
+    <button class="section-button" onclick="generateWash()">🔄 Тык!</button>
+  </div>
+
+  <!-- Блики -->
+  <div class="section">
+    <div class="section-title">🖌️ Блики</div>
+    <div id="drybrushColor" class="cards"></div>
+    <button class="section-button" onclick="generateDrybrush()">🔄 Тык!</button>
+  </div>
+
+  <script>
+    const SPIN_TOTAL_STEPS = 14;        // сколько раз сменится цвет во время вращения
+    const SPIN_BASE_INTERVAL = 40;      // начальная скорость смены (мс), чем меньше, тем быстрее
+    const SPIN_SLOWDOWN_FACTOR = 1.4;   // во сколько раз замедляется каждый шаг (больше = плавнее остановка)
+    const STOP_DELAY_BETWEEN_CARDS = 0.15; // секунды между остановкой соседних карточек в секции
+
+    const basePaints = [
+      "Khorne Red", "Macragge Blue", "Moot Green", "Averland Sunset",
+      "Zandri Dust", "Leadbelcher", "Abaddon Black", "Corax White",
+      "Mephiston Red", "Caliban Green", "Runelord Brass", "Wraithbone"
+    ];
+
+    const washes = [
+      "Nuln Oil", "Agrax Earthshade", "Reikland Fleshshade",
+      "Drakenhof Nightshade", "Seraphim Sepia", "Coelia Greenshade"
+    ];
+
+     const colorMap = {
+      "Khorne Red": "#8B0000",
+      "Macragge Blue": "#1D3557",
+      "Moot Green": "#39FF14",
+      "Averland Sunset": "#FFB347",
+      "Zandri Dust": "#C2B280",
+      "Leadbelcher": "#8A8A8A",
+      "Abaddon Black": "#0A0A0A",
+      "Corax White": "#F2F2F2",
+      "Mephiston Red": "#B22222",
+      "Caliban Green": "#2F4F2F",
+      "Runelord Brass": "#B5A642",
+      "Wraithbone": "#E8DCC8",
+      "Nuln Oil": "#4A4A4A",
+      "Agrax Earthshade": "#5C4033",
+      "Reikland Fleshshade": "#C29B7D",
+      "Drakenhof Nightshade": "#1B1F3B",
+      "Seraphim Sepia": "#8B7D5E",
+      "Coelia Greenshade": "#1F4F3B"
+    };
+
+    // =================================
+
+    function getColor(name) {
+      return colorMap[name] || stringToColor(name);
+    }
+
+    function stringToColor(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      let color = '#';
+      for (let i = 0; i < 3; i++) {
+        const value = (hash >> (i * 8)) & 0xFF;
+        color += ('00' + value.toString(16)).slice(-2);
+      }
+      return color;
+    }
+
+    function getRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getRandomUnique(arr, count) {
+      const shuffled = [...arr].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, count);
+    }
+
+    function createCardElement() {
+      const card = document.createElement('div');
+      card.className = 'card visible';
+
+      const dot = document.createElement('div');
+      dot.className = 'color-dot';
+
+      const label = document.createElement('div');
+      label.className = 'color-name';
+
+      card.appendChild(dot);
+      card.appendChild(label);
+      return { card, dot, label };
+    }
+
+      function spinCard(dot, label, finalName, colorPoolArray, startDelay, onComplete) {
+      // Показываем случайное начальное значение
+      const updateDisplay = (name) => {
+        dot.style.backgroundColor = getColor(name);
+        label.textContent = name;
+      };
+
+      updateDisplay(getRandom(colorPoolArray));
+
+      let step = 0;
+      let currentInterval = SPIN_BASE_INTERVAL;
+
+      function nextStep() {
+        step++;
+        if (step >= SPIN_TOTAL_STEPS) {
+          // Финальная установка
+          updateDisplay(finalName);
+          if (onComplete) onComplete();
+          return;
+        }
+
+         const randomName = getRandom(colorPoolArray);
+        updateDisplay(randomName);
+
+        currentInterval = Math.min(currentInterval * SPIN_SLOWDOWN_FACTOR, 400);
+        setTimeout(nextStep, currentInterval);
+      }
+
+         setTimeout(() => {
+        // Первый шаг без задержки, но внутри nextStep уже будем увеличивать
+        updateDisplay(getRandom(colorPoolArray));
+        setTimeout(nextStep, SPIN_BASE_INTERVAL);
+      }, startDelay * 1000);
+    }
+
+      function spinSection(containerId, finalItems, colorPoolArray) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      const cardElements = [];
+
+        finalItems.forEach((finalName) => {
+        const { card, dot, label } = createCardElement();
+        container.appendChild(card);
+        cardElements.push({ dot, label, finalName });
+      });
+
+        cardElements.forEach((item, index) => {
+        const startDelay = index * STOP_DELAY_BETWEEN_CARDS;
+        spinCard(item.dot, item.label, item.finalName, colorPoolArray, startDelay, () => {
+          // Можно добавить звук или визуальный эффект остановки
+        });
+      });
+    }
+
+      function generateBases() {
+      const chosen = getRandomUnique(basePaints, 4);
+      spinSection('baseColors', chosen, basePaints);
+    }
+
+    function generateWash() {
+      const chosen = [getRandom(washes)];
+      spinSection('washColor', chosen, washes);
+    }
+
+    function generateDrybrush() {
+      const chosen = [getRandom(basePaints)];
+      spinSection('drybrushColor', chosen, basePaints);
+    }
+
+    window.onload = function() {
+      generateBases();
+      generateWash();
+      generateDrybrush();
+    };
+  </script>
+</body>
+</html>
