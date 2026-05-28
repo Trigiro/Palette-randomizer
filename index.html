@@ -91,15 +91,18 @@
       transition: background-color 0.1s ease;
     }
 
-    .color-name {
-      font-size: 0.9rem;
-      font-weight: 500;
-      word-break: break-word;
-      min-height: 2.5em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+.color-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  hyphens: none;
+  min-height: 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 
     .section-button {
       margin-top: 20px;
