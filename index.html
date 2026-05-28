@@ -133,21 +133,21 @@
 
   <!-- Основные цвета -->
   <div class="section">
-    <div class="section-title">🎨 Основные цвета</div>
+    <div class="section-title">🎨 Основные цвета\Base colours</div>
     <div id="baseColors" class="cards"></div>
     <button class="section-button" onclick="generateBases()">🔄 Тык!</button>
   </div>
 
   <!-- Тени -->
   <div class="section">
-    <div class="section-title">💧 Тени</div>
+    <div class="section-title">💧 Тень\Wash</div>
     <div id="washColor" class="cards"></div>
     <button class="section-button" onclick="generateWash()">🔄 Тык!</button>
   </div>
 
   <!-- Блики -->
   <div class="section">
-    <div class="section-title">🖌️ Блики</div>
+    <div class="section-title">🖌️ Рельеф\Dry brush</div>
     <div id="drybrushColor" class="cards"></div>
     <button class="section-button" onclick="generateDrybrush()">🔄 Тык!</button>
   </div>
@@ -159,9 +159,14 @@
     const STOP_DELAY_BETWEEN_CARDS = 0.15; // секунды между остановкой соседних карточек в секции
 
     const basePaints = [
-      "Khorne Red", "Macragge Blue", "Moot Green", "Averland Sunset",
-      "Zandri Dust", "Leadbelcher", "Abaddon Black", "Corax White",
-      "Mephiston Red", "Caliban Green", "Runelord Brass", "Wraithbone"
+      "Черная", "Белая", "Желтая", "Желтая сера",
+      "Пчела", "Электрик лайм", "Киноварь", "Ржавчина оранжевая",
+      "Алый", "Бордовый", "Рубиново-красный", "Черно-красный",
+      "Фиолетовая", "Индиго", "Пурпурный", "Лаймово-зеленый",
+      "Оливковый", "Изумрудный", "Русская зеленая", "Глубокий синевато-зеленый", "Зеленый гоблин",
+      "Зеленый сок", "Серый бетон", "Кобальт синий", "Ярко синяя",
+      "Ночной синий", "Коричневый", "Красновато-коричневый", "Темная красно-коричневая", "Телесная ультра нежная",
+      "Телесная", "Телесная кофейная", "Телесный тени"
     ];
 
     const washes = [
@@ -170,24 +175,39 @@
     ];
 
      const colorMap = {
-      "Khorne Red": "#8B0000",
-      "Macragge Blue": "#1D3557",
-      "Moot Green": "#39FF14",
-      "Averland Sunset": "#FFB347",
-      "Zandri Dust": "#C2B280",
-      "Leadbelcher": "#8A8A8A",
-      "Abaddon Black": "#0A0A0A",
-      "Corax White": "#F2F2F2",
-      "Mephiston Red": "#B22222",
-      "Caliban Green": "#2F4F2F",
-      "Runelord Brass": "#B5A642",
-      "Wraithbone": "#E8DCC8",
-      "Nuln Oil": "#4A4A4A",
-      "Agrax Earthshade": "#5C4033",
-      "Reikland Fleshshade": "#C29B7D",
-      "Drakenhof Nightshade": "#1B1F3B",
-      "Seraphim Sepia": "#8B7D5E",
-      "Coelia Greenshade": "#1F4F3B"
+      "Черная": "#111111", 
+      "Белая": "#FFFFFF",
+      "Желтая": "#FFD300",
+      "Желтая сера": "#EDFF21",
+      "Пчела": "#FFB900",
+      "Электрик лайм": "",
+      "Киноварь": "#E34234",
+      "Ржавчина оранжевая": "#B7410E",
+      "Алый": "#FF2400",
+      "Бордовый": "#800020",
+      "Рубиново-красный": "#9B111E",
+      "Черно-красный": "#412227",
+      "Фиолетовая": "#800080",
+      "Индиго": "#560591",
+      "Пурпурный": "#800080",
+      "Лаймово-зеленый": "#32CD32",
+      "Оливковый": "#808000",
+      "Изумрудный": "#50C878",
+      "Русская зеленая": "#679267",
+      "Глубокий синевато-зеленый": "#00382B",
+      "Зеленый гоблин": "#19b535",
+      "Зеленый сок": "#3bde39",
+      "Серый бетон": "#818479",
+      "Кобальт синий": "#0047AB",
+      "Ярко синяя": "#0000FF",
+      "Ночной синий": "#191970",
+      "Коричневый": "#964B00",
+      "Красновато-коричневый": "#A52A2A",
+      "Темная красно-коричневая": "#C04000",
+      "Телесная ультра нежная": "#F4D5BB",
+      "Телесная": "#C68642",
+      "Телесная кофейная": "#8D5524",
+      "Телесный тени": "#5a3d28"
     };
 
     // =================================
@@ -234,7 +254,7 @@
     }
 
       function spinCard(dot, label, finalName, colorPoolArray, startDelay, onComplete) {
-      // Показываем случайное начальное значение
+     
       const updateDisplay = (name) => {
         dot.style.backgroundColor = getColor(name);
         label.textContent = name;
@@ -248,7 +268,7 @@
       function nextStep() {
         step++;
         if (step >= SPIN_TOTAL_STEPS) {
-          // Финальная установка
+        
           updateDisplay(finalName);
           if (onComplete) onComplete();
           return;
@@ -262,7 +282,7 @@
       }
 
          setTimeout(() => {
-        // Первый шаг без задержки, но внутри nextStep уже будем увеличивать
+      
         updateDisplay(getRandom(colorPoolArray));
         setTimeout(nextStep, SPIN_BASE_INTERVAL);
       }, startDelay * 1000);
@@ -283,7 +303,7 @@
         cardElements.forEach((item, index) => {
         const startDelay = index * STOP_DELAY_BETWEEN_CARDS;
         spinCard(item.dot, item.label, item.finalName, colorPoolArray, startDelay, () => {
-          // Можно добавить звук или визуальный эффект остановки
+          
         });
       });
     }
